@@ -19,22 +19,21 @@ version='0.1'
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+import pdb
 import sys,os,traceback
-from itertools import product
 
 from gimpfu import *
 
-def mergeWithAllLayers(image):
+def mergeWithNextLayers(image, layer, layercount):
     try:
-        firstLayer = image.layers[0]
-        index = 0
+        pos = pdb.gimp_image_get_item_position(image, layer)
+        stop = len(image.layers)
 
-        for l in image.layers:
-            pos = pdb.gimp_image_get_item_position(image, l)
-            if pos == 0:
-                continue
-            index = index + 1
-            copiedLayer = pdb.gimp_layer_copy(firstLayer, True)
+        if layercount > 0:
+            stop = pos + int(layercount) + 1
+        
+        for index in range(pos + 1, stop):
+            copiedLayer = pdb.gimp_layer_copy(layer, True)
             pdb.gimp_image_insert_layer(image, copiedLayer, None, index)
             pdb.gimp_image_merge_down(image, copiedLayer, CLIP_TO_IMAGE)
 
@@ -42,46 +41,29 @@ def mergeWithAllLayers(image):
         pdb.gimp_message(e.args[0])
         print traceback.format_exc()
     
-### Registrations
-
+# Register script
 author='Khalaris'
 year='2023'
-menuEntry='<Image>/Layer/'
-description='Merge first layer with all other layers'
+description='Merge with the next n layers'
 scriptpath='\n'+os.path.abspath(sys.argv[0])
 
 register(
-    'kh-layer-mergewithalllayers',
+    'kh-layer-mergewithnextlayers',
     description,
     description+scriptpath,
     author,
     author,
     year,
-    description+'...',
+    'Merge with next layers...',
     '*',
     [
-        (PF_IMAGE,      'image',        'Input image', None),
+        (PF_IMAGE, "image", "takes current image", None),
+        (PF_DRAWABLE, "layer", "input layer", None),
+        (PF_SPINNER, "layercount", "Layers (use 0 for all subsequent)", 0, (0, 500, 1)),
     ],
     [],
-    mergeWithAllLayers,
-    menu=menuEntry
+    mergeWithNextLayers,
+    menu='<Image>/Layer/'
 )
     
 main()
-
-
-
-# Registration parameters
-# register(
-# 1  "function name",
-# 2  "short description",
-# 3  " long description",
-# 4  "author",
-# 5  "copyright",
-# 6  "date",
-# 7  "Ex01: Test Input Parameters...",
-# 8  "image type supported",
-# 9  [input parms],
-# 10 [ results],
-# 11 main function,
-# 12 menu = "<Image>/MyScripts/Examples")

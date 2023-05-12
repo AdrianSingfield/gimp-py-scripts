@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# GIMP plugin to merge the first layer with all other layers
 # (c) Khalaris 2023
 
-version='0.1'
+# Docs and download here: https://github.com/AdrianSingfield/gimp-py-scripts
+
+version='0.2'
 
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by

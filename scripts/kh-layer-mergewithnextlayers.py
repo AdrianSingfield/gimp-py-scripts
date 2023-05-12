@@ -20,15 +20,15 @@ version='0.2'
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+from email import message
 import pdb
 import sys,os,traceback
 
 from gimpfu import *
 
-# TODO: How to undo this with a single operation?
-
 def mergeWithNextLayers(image, layer, layercount, lastlayername):
     try:
+        pdb.gimp_image_undo_group_start(image)
         pos = pdb.gimp_image_get_item_position(image, layer)
         stophandled = False
 
@@ -67,6 +67,9 @@ def mergeWithNextLayers(image, layer, layercount, lastlayername):
     except Exception as e:
         pdb.gimp_message(e.args[0])
         print traceback.format_exc()
+
+    finally:
+        pdb.gimp_image_undo_group_end(image)
     
 # Register script
 author='Khalaris'
